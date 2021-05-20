@@ -21,12 +21,17 @@ let listOfRecipes = document.getElementById("recepty")
 let recipe;
 let searchEl = document.getElementById("hledat") //not button, but search form
 let index;
-let categoryInput = document.getElementById("kategorie")
+let categoryEl = document.getElementById("kategorie")
 
-for (index = 0; index < recepty.length; index++) {
-    recipe = recepty[index]
-    createListItem(recipe)
+addEventListener("load", createList)
+
+function createList() {
+    for (index = 0; index < recepty.length; index++) {
+        recipe = recepty[index]
+        createListItem(recipe)
+    }
 }
+
 function createListItem(item) {
     recipeDiv = document.createElement("div");
     recipeDiv.className = "recept"; //eventListener on click
@@ -48,33 +53,37 @@ function createListItem(item) {
 searchEl.addEventListener("input", searchRecipe);
 
 function searchRecipe() {
-    listOfRecipes.innerHTML = " "
+    listOfRecipes.innerHTML = " ";
     
     for (index = 0; index < recepty.length; index++) {
         recipe = recepty[index];
         let recipeUpperCase = recipe.nadpis.toUpperCase();
         let searchUpperCase = searchEl.value.toUpperCase();
-        let position = recipeUpperCase.search(searchUpperCase)
+        let position = recipeUpperCase.search(searchUpperCase);
         
         if (position >= 0) {
-            createListItem(recipe) 
+            createListItem(recipe) ;
         } else {
-            console.log("zadna shoda")
+            console.log("zadna shoda");
         }
     }
 }
 
-categoryInput.addEventListener("input", categoryFilter)
+categoryEl.addEventListener("input", categoryFilter);
 
 function categoryFilter() {
-    listOfRecipes.innerHTML = " "
-    console.log(categoryInput.value)
-    for (index = 0; index < recepty.length; index++) {
-        recipe = recepty[index];
-        if (categoryInput.value == recipe.stitek) {
-            createListItem(recipe) 
-        } else {
-            console.log("zadna shoda")
+    if (categoryEl.value == "") {
+        listOfRecipes.innerHTML = " ";
+        createList()
+    } else {
+        listOfRecipes.innerHTML = " ";
+        for (index = 0; index < recepty.length; index++) {
+            recipe = recepty[index];
+            console.log(recipe.stitek);
+            if (categoryEl.value == recipe.stitek) {
+                createListItem(recipe) ;  
+            }
         }
     }
 }
+    
