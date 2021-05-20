@@ -21,7 +21,7 @@ let listOfRecipes = document.getElementById("recepty")
 let recipe;
 let searchEl = document.getElementById("hledat") //not button, but search form
 let index;
-let recipeDiv
+let categoryInput = document.getElementById("kategorie")
 
 for (index = 0; index < recepty.length; index++) {
     recipe = recepty[index]
@@ -57,6 +57,21 @@ function searchRecipe() {
         let position = recipeUpperCase.search(searchUpperCase)
         
         if (position >= 0) {
+            createListItem(recipe) 
+        } else {
+            console.log("zadna shoda")
+        }
+    }
+}
+
+categoryInput.addEventListener("input", categoryFilter)
+
+function categoryFilter() {
+    listOfRecipes.innerHTML = " "
+    console.log(categoryInput.value)
+    for (index = 0; index < recepty.length; index++) {
+        recipe = recepty[index];
+        if (categoryInput.value == recipe.stitek) {
             createListItem(recipe) 
         } else {
             console.log("zadna shoda")
