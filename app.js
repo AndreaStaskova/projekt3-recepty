@@ -19,29 +19,47 @@ recept-hodnoceni, recept-nazev, recept-popis.
 */
 let listOfRecipes = document.getElementById("recepty")
 let recipe;
-let search = document.getElementById("hledat") //not button, but search form
+let searchEl = document.getElementById("hledat") //not button, but search form
+let index;
+let recipeDiv
 
-for (let index = 0; index < recepty.length; index++) {
+for (index = 0; index < recepty.length; index++) {
     recipe = recepty[index]
-    let recipeDiv = document.createElement("div");
-    recipeDiv.className = "recept";
+    createListItem(recipe)
+}
+function createListItem(item) {
+    recipeDiv = document.createElement("div");
+    recipeDiv.className = "recept"; //eventListener on click
     listOfRecipes.appendChild(recipeDiv);
     let recipeListPicture = document.createElement("div");
     recipeListPicture.className = "recept-obrazek";
     recipeDiv.appendChild(recipeListPicture);
     let pictureList = document.createElement("img");
-    pictureList.src = recipe.img;
+    pictureList.src = item.img;
     recipeListPicture.appendChild(pictureList);
     let recipeNameDiv = document.createElement("div");
     recipeNameDiv.className = "recept-info";
     recipeDiv.appendChild(recipeNameDiv);
     let recipeName = document.createElement("h3");
-    recipeName.innerHTML = recipe.nadpis;
+    recipeName.innerHTML = item.nadpis;
     recipeNameDiv.appendChild(recipeName);
 }
 
-addEventListener("change", searchRecipe);
+searchEl.addEventListener("input", searchRecipe);
 
 function searchRecipe() {
+    listOfRecipes.innerHTML = " "
     
+    for (index = 0; index < recepty.length; index++) {
+        recipe = recepty[index];
+        let recipeUpperCase = recipe.nadpis.toUpperCase();
+        let searchUpperCase = searchEl.value.toUpperCase();
+        let position = recipeUpperCase.search(searchUpperCase)
+        
+        if (position >= 0) {
+            createListItem(recipe) 
+        } else {
+            console.log("zadna shoda")
+        }
+    }
 }
