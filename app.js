@@ -17,18 +17,23 @@ recept-hodnoceni, recept-nazev, recept-popis.
 
 6) Poslední vybraný recept ulož do Local Storage, aby se při novém otevření aplikace načetl.
 */
-let listOfRecipes = document.getElementById("recepty")
+let listOfRecipes = document.getElementById("recepty");
 let recipe;
-let searchEl = document.getElementById("hledat") //not button, but search form
+let recipeDiv;
+let searchEl = document.getElementById("hledat") ;//not button, but search form
 let index;
-let categoryEl = document.getElementById("kategorie")
+let categoryEl = document.getElementById("kategorie");
+let listOfIndexes = [];
+let ratingEl = document.getElementById("razeni");
 
 addEventListener("load", createList)
+recipeDiv.addEventListener("click", recipeDetail)
 
 function createList() {
     for (index = 0; index < recepty.length; index++) {
         recipe = recepty[index]
         createListItem(recipe)
+        //listOfIndexes.push(index);
     }
 }
 
@@ -50,13 +55,18 @@ function createListItem(item) {
     recipeNameDiv.appendChild(recipeName);
 }
 
+function recipeDetail() {
+    
+}
+
 searchEl.addEventListener("input", searchRecipe);
 
 function searchRecipe() {
+    categoryEl.value = ""
     listOfRecipes.innerHTML = " ";
-    
-    for (index = 0; index < recepty.length; index++) {
-        recipe = recepty[index];
+/*
+    listOfIndexes.forEach(ele => {
+        recipe = recepty[ele];
         let recipeUpperCase = recipe.nadpis.toUpperCase();
         let searchUpperCase = searchEl.value.toUpperCase();
         let position = recipeUpperCase.search(searchUpperCase);
@@ -64,7 +74,29 @@ function searchRecipe() {
         if (position >= 0) {
             createListItem(recipe) ;
         } else {
+            //
             console.log("zadna shoda");
+        }
+    });
+   */
+    for (index = 0; index < recepty.length; index++) {
+        recipe = recepty[index];
+        let recipeUpperCase = recipe.nadpis.toUpperCase();
+        let searchUpperCase = searchEl.value.toUpperCase();
+        let position = recipeUpperCase.search(searchUpperCase);
+        //listOfIndexes.splice(0, listOfIndexes.length)
+        if (position >= 0) {
+            createListItem(recipe);
+            if (listOfIndexes.includes(index) == false) {
+                listOfIndexes.push(index);
+            }
+            console.log(listOfIndexes);
+            
+            
+        } else {
+            //console.log("not this: " + index);
+            listOfIndexes.splice(index, 1)
+            
         }
     }
 }
@@ -79,11 +111,38 @@ function categoryFilter() {
         listOfRecipes.innerHTML = " ";
         for (index = 0; index < recepty.length; index++) {
             recipe = recepty[index];
-            console.log(recipe.stitek);
             if (categoryEl.value == recipe.stitek) {
                 createListItem(recipe) ;  
             }
         }
     }
 }
-    
+
+
+function filter() {
+//metoda filter for array
+  }
+
+ratingEl.addEventListener("input", sortByRating);
+
+function sortByRating() {
+    if (ratingEl.value == 1) {
+        listOfRecipes.innerHTML = "";
+        recepty.sort(function(a, b){return b.hodnoceni - a.hodnoceni});
+        
+        console.log(recepty)
+        createList()
+        
+    } else if (ratingEl.value == 2) {
+        listOfRecipes.innerHTML = "";
+        recepty.sort(function(a, b){return a.hodnoceni - b.hodnoceni});
+        
+        console.log(recepty)
+        createList()
+    } else {
+        listOfRecipes.innerHTML = "";
+        createList()
+    }     
+}
+
+
