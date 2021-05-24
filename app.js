@@ -19,27 +19,48 @@ recept-hodnoceni, recept-nazev, recept-popis.
 */
 let listOfRecipes = document.getElementById("recepty");
 let recipe;
-let recipeDiv;
 let searchEl = document.getElementById("hledat") ;//not button, but search form
 let index;
 let categoryEl = document.getElementById("kategorie");
 let listOfIndexes = [];
 let ratingEl = document.getElementById("razeni");
+let lastViewed
 
-addEventListener("load", createList)
-recipeDiv.addEventListener("click", recipeDetail)
+addEventListener("load", createList);
 
+/**
+ * loops through the array in recepty.js and creates list of items by createListItem()
+ * checks for recipe value in localStorage and creates detail display of it
+ * if recipe in LS is undefined, creates detail display of first object of array 
+ */
 function createList() {
     for (index = 0; index < recepty.length; index++) {
-        recipe = recepty[index]
-        createListItem(recipe)
+        recipe = recepty[index];
+        createListItem(recipe);
+        
         //listOfIndexes.push(index);
     }
+
+    let value = localStorage.getItem("recipe");
+    console.log(value)
+    if (value == null || value == undefined) {
+        lastViewed = null
+        recipeDetailCreate(recepty[0]);
+    } else {
+        lastViewed = JSON.parse(value);
+        console.log(lastViewed)
+        recipeDetailCreate(lastViewed);
+    }  
 }
 
+/**
+ * creates one item for list in <div id="recepty">
+ * adds eventListener to the recipe item
+ * @param {object} item from recepty in recepty.js
+ */
 function createListItem(item) {
-    recipeDiv = document.createElement("div");
-    recipeDiv.className = "recept"; //eventListener on click
+    let recipeDiv = document.createElement("div");
+    recipeDiv.className = "recept"; 
     listOfRecipes.appendChild(recipeDiv);
     let recipeListPicture = document.createElement("div");
     recipeListPicture.className = "recept-obrazek";
@@ -53,14 +74,45 @@ function createListItem(item) {
     let recipeName = document.createElement("h3");
     recipeName.innerHTML = item.nadpis;
     recipeNameDiv.appendChild(recipeName);
+
+    recipeDiv.addEventListener("click", recipeDetailDisplay);
 }
 
-function recipeDetail() {
-    
+/**
+ * loads values from recipeObject to HTML div element with class="recept-detail-info"
+ * saves the object as JSON to localStorage
+ * @param {object} recipeObject 
+ */
+function recipeDetailCreate(recipeObject) {
+    document.getElementById("recept-foto").src = recipeObject.img;
+    document.getElementById("recept-foto").alt = recipeObject.nadpis;
+    document.getElementById("recept-hodnoceni").innerHTML = recipeObject.hodnoceni;
+    document.getElementById("recept-kategorie").innerHTML = recipeObject.kategorie;
+    document.getElementById("recept-nazev").innerHTML = recipeObject.nadpis;
+    document.getElementById("recept-popis").innerHTML = recipeObject.popis;
+    localStorage.recipe = JSON.stringify(recipeObject);
+}
+
+/**
+ * loops through the array recepty and checks for the event target
+ * displays the event target detailed information by calling recipeDetailCreate
+ * @param {*} event 
+ */
+function recipeDetailDisplay(event) {
+    for (index = 0; index < recepty.length; index++) {
+        recipe = recepty[index];
+        if (event.target.innerText == recipe.nadpis) {
+            recipeDetailCreate(recipe)
+        }
+    }
 }
 
 searchEl.addEventListener("input", searchRecipe);
 
+/**
+ * search engine for recepty array
+ * checks nadpis property of objects in array
+ */
 function searchRecipe() {
     categoryEl.value = ""
     listOfRecipes.innerHTML = " ";
@@ -103,6 +155,9 @@ function searchRecipe() {
 
 categoryEl.addEventListener("input", categoryFilter);
 
+/**
+ * filters recipes in recepty array by property stitek
+ */
 function categoryFilter() {
     if (categoryEl.value == "") {
         listOfRecipes.innerHTML = " ";
@@ -125,19 +180,17 @@ function filter() {
 
 ratingEl.addEventListener("input", sortByRating);
 
+/**
+ * sorts listOfRecipes by property hodnoceni
+ */
 function sortByRating() {
     if (ratingEl.value == 1) {
         listOfRecipes.innerHTML = "";
         recepty.sort(function(a, b){return b.hodnoceni - a.hodnoceni});
-        
-        console.log(recepty)
         createList()
-        
     } else if (ratingEl.value == 2) {
         listOfRecipes.innerHTML = "";
         recepty.sort(function(a, b){return a.hodnoceni - b.hodnoceni});
-        
-        console.log(recepty)
         createList()
     } else {
         listOfRecipes.innerHTML = "";
