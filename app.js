@@ -1,9 +1,3 @@
-/*
-
-4) Doplň řazení receptů podle hodnocení.
-
-VYLEPŠIT KOMBINACI HLEDÁNÍ, FILTROVÁNÍ A ŘAZENÍ
-*/
 let listOfRecipes = document.getElementById("recepty");
 let index;
 let recipe;
@@ -14,7 +8,6 @@ let lastViewed;
 let recipesArray = [];
 let sortedRecipes;
 
-
 addEventListener("load", onLoad);
 
 /**
@@ -23,7 +16,7 @@ addEventListener("load", onLoad);
  * if recipe in localStorage is undefined, use first object of array 
  */
 function onLoad() {
-    createList(recepty)
+    createList(recepty);
       
     let value = localStorage.getItem("recipe");
     if (value == null || value == undefined) {
@@ -113,7 +106,6 @@ categoryEl.addEventListener("input", searchRecipe);
  * check stitek property of objects in array for categoryEl
  */
 function searchRecipe() {
-    
     if (searchEl.value == 0 && categoryEl.value == 0){
         listOfRecipes.innerHTML = " ";
         recipesArray = [];
@@ -186,7 +178,7 @@ function sortByRating() {
     if (recipesArray.length == 0) {
         sortedRecipes = JSON.parse(JSON.stringify(recepty));
     } else {
-        sortedRecipes = JSON.parse(JSON.stringify(recipesArray))
+        sortedRecipes = JSON.parse(JSON.stringify(recipesArray));
     }
 
     if (ratingEl.value == 1) {
@@ -204,7 +196,7 @@ function sortByRating() {
         if (recipesArray.length == 0) {
             createList(recepty);
         } else {
-            createList(recipesArray)
+            createList(recipesArray);
         }
     }  
 }
