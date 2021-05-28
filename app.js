@@ -1,9 +1,6 @@
 /*
 Co je za úkol v tomto projektu:
 
-1) Do prvku s id="recepty" vygeneruj z dat seznam všech receptů z naší "databáze".
-HTML vzor, jak vygenerovaný recept vypadá, je zakomentovaný v index.html.
-
 2) Doplň hledání - v hlavičce odkomentuj pole pro hledání. Pri kliknutí na tlačítko Hledat
 by se měl seznam receptů vyfiltrovat podle hledaného slova.
 
@@ -11,46 +8,52 @@ by se měl seznam receptů vyfiltrovat podle hledaného slova.
 
 4) Doplň řazení receptů podle hodnocení.
 
-5) Na recepty v seznamu by mělo jít kliknout a na pravé polovině, se objeví detail receptu.
-Doplň patričné údaje receptu do HTML prvků s ID recept-foto, recept-kategorie,
-recept-hodnoceni, recept-nazev, recept-popis.
-
-6) Poslední vybraný recept ulož do Local Storage, aby se při novém otevření aplikace načetl.
+VYLEPŠIT KOMBINACI HLEDÁNÍ, FILTROVÁNÍ A ŘAZENÍ
 */
 let listOfRecipes = document.getElementById("recepty");
 let recipe;
-let searchEl = document.getElementById("hledat") ;//not button, but search form
+let searchEl = document.getElementById("hledat");//not button, but search form
 let index;
 let categoryEl = document.getElementById("kategorie");
 let listOfIndexes = [];
 let ratingEl = document.getElementById("razeni");
-let lastViewed
+let lastViewed;
+let recipesArray = [];
 
-addEventListener("load", createList);
+
+addEventListener("load", onLoad);
 
 /**
  * loops through the array in recepty.js and creates list of items by createListItem()
  * checks for recipe value in localStorage and creates detail display of it
  * if recipe in LS is undefined, creates detail display of first object of array 
  */
-function createList() {
-    for (index = 0; index < recepty.length; index++) {
-        recipe = recepty[index];
-        createListItem(recipe);
-        
-        //listOfIndexes.push(index);
-    }
-
+function onLoad() {
+    createList()
+      
     let value = localStorage.getItem("recipe");
-    console.log(value)
     if (value == null || value == undefined) {
-        lastViewed = null
+        lastViewed = null;
         recipeDetailCreate(recepty[0]);
     } else {
         lastViewed = JSON.parse(value);
-        console.log(lastViewed)
         recipeDetailCreate(lastViewed);
     }  
+}
+
+function createList() {
+    
+    if (recipesArray.length == 0) {
+        currentList = recepty;
+    } else {
+        currentList = recipesArray;
+    }
+
+    for (index = 0; index < currentList.length; index++) {
+        recipe = currentList[index];
+        createListItem(recipe);
+        
+    }
 }
 
 /**
@@ -96,13 +99,13 @@ function recipeDetailCreate(recipeObject) {
 /**
  * loops through the array recepty and checks for the event target
  * displays the event target detailed information by calling recipeDetailCreate
- * @param {*} event 
+ * @param {Event} event 
  */
 function recipeDetailDisplay(event) {
     for (index = 0; index < recepty.length; index++) {
         recipe = recepty[index];
         if (event.target.innerText == recipe.nadpis) {
-            recipeDetailCreate(recipe)
+            recipeDetailCreate(recipe);
         }
     }
 }
@@ -110,12 +113,14 @@ function recipeDetailDisplay(event) {
 searchEl.addEventListener("input", searchRecipe);
 
 /**
+ * TBD
  * search engine for recepty array
  * checks nadpis property of objects in array
  */
 function searchRecipe() {
-    categoryEl.value = ""
-    listOfRecipes.innerHTML = " ";
+    //categoryEl.value = "";
+    //listOfRecipes.innerHTML = " ";
+    //console.log("zacatek vyhledavani: ", recipesArray)
 /*
     listOfIndexes.forEach(ele => {
         recipe = recepty[ele];
@@ -131,51 +136,128 @@ function searchRecipe() {
         }
     });
    */
-    for (index = 0; index < recepty.length; index++) {
-        recipe = recepty[index];
-        let recipeUpperCase = recipe.nadpis.toUpperCase();
-        let searchUpperCase = searchEl.value.toUpperCase();
-        let position = recipeUpperCase.search(searchUpperCase);
-        //listOfIndexes.splice(0, listOfIndexes.length)
-        if (position >= 0) {
-            createListItem(recipe);
-            if (listOfIndexes.includes(index) == false) {
-                listOfIndexes.push(index);
+    if (searchEl.value == 0 & categoryEl.value == 0){
+        listOfRecipes.innerHTML = " ";
+        //tenhle for bude zbytečný, až bude fungovat přidávání do recipesArray
+        //createList() místo něj
+        /*
+        for (index = 0; index < recepty.length; index++) {
+            recipe = recepty[index];
+            let recipeUpperCase = recipe.nadpis.toUpperCase();
+            let searchUpperCase = searchEl.value.toUpperCase();
+            let position = recipeUpperCase.search(searchUpperCase);
+            
+            if (position >= 0) {
+                createListItem(recipe);
+                recipesArray.push(recipe);
+                
             }
-            console.log(listOfIndexes);
+        }*/
+        recipesArray = [];
+        createList();   
+    } else if (searchEl.value != 0 & categoryEl.value == 0) {
+        listOfRecipes.innerHTML = " ";
+        recipesArray = [];
+        for (index = 0; index < recepty.length; index++) {
+            recipe = recepty[index];
+            let recipeUpperCase = recipe.nadpis.toUpperCase();
+            let searchUpperCase = searchEl.value.toUpperCase();
+            let position = recipeUpperCase.search(searchUpperCase);
             
-            
-        } else {
-            //console.log("not this: " + index);
-            listOfIndexes.splice(index, 1)
-            
+            if (position >= 0) {
+                recipesArray.push(recipe);  
+            } 
         }
-    }
+        if (recipesArray.length == 0) {
+            listOfRecipes.innerHTML = " "; 
+        } else {
+            createList();
+        }
+    } else if (searchEl.value != 0 & categoryEl.value != 0) {
+        listOfRecipes.innerHTML = " ";
+        for (index = 0; index < recipesArray.length; index++) {
+            recipe = recipesArray[index];
+            let recipeUpperCase = recipe.nadpis.toUpperCase();
+            let searchUpperCase = searchEl.value.toUpperCase();
+            let position = recipeUpperCase.search(searchUpperCase);
+            
+            if (position < 0) {
+                recipesArray.splice(index, 1);  
+            }
+        createList();
+        }
+    } 
 }
 
 categoryEl.addEventListener("input", categoryFilter);
 
 /**
  * filters recipes in recepty array by property stitek
+ * filter method???
  */
 function categoryFilter() {
-    if (categoryEl.value == "") {
+    console.log(recipesArray.length)
+    if (categoryEl.value == 0 & searchEl.value == 0) {
         listOfRecipes.innerHTML = " ";
-        createList()
-    } else {
+        recipesArray = [];
+        console.log(recipesArray.length)
+        createList();
+    } else if (categoryEl.value != 0 & searchEl.value == 0) {
         listOfRecipes.innerHTML = " ";
+        recipesArray = [];
+        let category = categoryEl.value
+        recipesArray = recepty.filter(filterItems(recepty, category))
+        /*
         for (index = 0; index < recepty.length; index++) {
             recipe = recepty[index];
             if (categoryEl.value == recipe.stitek) {
-                createListItem(recipe) ;  
+                console.log(recipesArray.includes(recipe))
+                recipesArray.push(recipe);
             }
         }
-    }
+        */
+        console.log(recipesArray.length)
+        createList();    
+    } else if (categoryEl.value != 0 & searchEl.value != 0){
+        listOfRecipes.innerHTML = " ";
+        /*
+        if (recipesArray.length == 0) {
+            listOfRecipes.innerHTML = " ";
+            for (index = 0; index < recepty.length; index++) {
+                recipe = recepty[index];
+                if (categoryEl.value == recipe.stitek) {
+                    recipesArray.push(recipe);
+                }
+            }
+            console.log(recipesArray.length)
+        } else {} */
+        for (index = 0; index < recipesArray.length; index++) {
+            recipe = recipesArray[index];
+            if (categoryEl.value != recipe.stitek) {
+                recipesArray.splice(index, 1);
+            }
+        }
+        createList();
+        console.log(recipesArray.length)        
+    } 
+    
+
 }
 
-
-function filter() {
-//metoda filter for array
+function checkCategory(arr, categoryValue) {
+    for (index=0; index<arr.length;index++){
+        recipe = arr[index]
+    }
+    if (recipe.stitek == categoryValue){
+        return true
+    }
+    
+}
+function filterItems(arr, categoryValue) {
+    return arr.filter(function(el) {
+        return el.stitek == categoryValue
+        //return el.toLowerCase().indexOf(query.toLowerCase()) !== -1
+    })
   }
 
 ratingEl.addEventListener("input", sortByRating);
@@ -184,18 +266,17 @@ ratingEl.addEventListener("input", sortByRating);
  * sorts listOfRecipes by property hodnoceni
  */
 function sortByRating() {
+    
     if (ratingEl.value == 1) {
         listOfRecipes.innerHTML = "";
-        recepty.sort(function(a, b){return b.hodnoceni - a.hodnoceni});
-        createList()
+        sortedRecipes.sort(function(a, b){return b.hodnoceni - a.hodnoceni});
+        createList();
     } else if (ratingEl.value == 2) {
         listOfRecipes.innerHTML = "";
-        recepty.sort(function(a, b){return a.hodnoceni - b.hodnoceni});
-        createList()
+        sortedRecipes.sort(function(a, b){return a.hodnoceni - b.hodnoceni});
+        createList();
     } else {
         listOfRecipes.innerHTML = "";
-        createList()
+        createList();
     }     
 }
-
-

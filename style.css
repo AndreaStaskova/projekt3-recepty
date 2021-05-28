@@ -21,10 +21,11 @@ body {
     font-family: 'Raleway', sans-serif;
     color: #555;
     /*
-    background-image: linear-gradient(to top, #fddb92 0%, #d1fdff 100%);
+    background-image: linear-gradient(to top, #fddb92 0%, #d1fdff 100%);*/
+    
     background-image: linear-gradient(to top, #feada6 0%, #f5efef 100%);
-    */
-    background-image: linear-gradient(to top, #c1dfc4 0%, #deecdd 100%);
+    /*
+    background-image: linear-gradient(to top, #c1dfc4 0%, #deecdd 100%);*/
 
 }
 
